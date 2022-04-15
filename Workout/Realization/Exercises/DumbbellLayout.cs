@@ -2,7 +2,7 @@ namespace Workout
 {
     public class DumbbellLayout : Exercise
     {
-        public DumbbellLayout() : base("Dumbbell Layout")
+        public DumbbellLayout(int reps, int sets) : base("Dumbbell Layout", reps, sets)
         {
         }
     }

@@ -2,7 +2,7 @@ namespace Workout
 {
     public class Squat : Exercise
     {
-        public Squat() : base("Squat")
+        public Squat(int reps, int sets) : base("Squat", reps, sets)
         {
         }
     }

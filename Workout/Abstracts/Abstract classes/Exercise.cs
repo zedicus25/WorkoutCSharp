@@ -8,9 +8,11 @@ namespace Workout
         private int _sets;
         private int _reps;
 
-        protected Exercise(string name)
+        protected Exercise(string name, int reps, int sets)
         {
             _name = name;
+            SetReps(reps);
+            SetSets(sets);
         }
         public string GetName() => _name;
         

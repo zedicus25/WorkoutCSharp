@@ -2,7 +2,7 @@ namespace Workout
 {
     public class TiltPull : Exercise
     {
-        public TiltPull() : base("Till pull")
+        public TiltPull(int reps, int sets) : base("Till pull", reps, sets)
         {
         }
     }
