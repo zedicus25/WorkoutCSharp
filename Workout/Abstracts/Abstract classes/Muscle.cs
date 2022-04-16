@@ -11,7 +11,7 @@ namespace Workout
 
         protected Muscle(string name)
         {
-            Name = name;
+            Name = name.ToLower();
             _exercises = new List<Exercise>();
         }
 
@@ -47,6 +47,7 @@ namespace Workout
         }
         public void UpdateExercise(string exerciseName)
         {
+            exerciseName = exerciseName.ToLower();
             if (IsHas(exerciseName) == false)
             {
                 Console.WriteLine("Dont has in list");
@@ -87,6 +88,13 @@ namespace Workout
 
             sb.AppendLine(new string('-', 20));
             return sb.ToString();
+        }
+
+        public Exercise GetExercise(int ind)
+        {
+            if (ind >= 0 && ind < _exercises.Count)
+                return _exercises[ind];
+            return null;
         }
 
         private bool IsHas(string name)
