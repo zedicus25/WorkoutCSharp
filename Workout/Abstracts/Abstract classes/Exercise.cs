@@ -10,7 +10,7 @@ namespace Workout
 
         protected Exercise(string name, int reps, int sets)
         {
-            _name = name;
+            _name = name.ToLower();
             SetReps(reps);
             SetSets(sets);
         }
