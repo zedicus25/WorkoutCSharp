@@ -28,8 +28,8 @@ namespace Workout
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(_name);
-            sb.AppendLine("Sets: " + _sets);
-            sb.AppendLine("Reps: " + _reps);
+            sb.AppendLine("  sets: " + _sets);
+            sb.AppendLine("  reps: " + _reps);
             return sb.ToString();
         }
     }

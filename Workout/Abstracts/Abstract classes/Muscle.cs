@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Workout
 {
@@ -16,7 +17,7 @@ namespace Workout
 
         public void AddExercise(Exercise exercise)
         {
-            if (IsHas(exercise.GetName()) == false)
+            if (IsHas(exercise.GetName()))
             {
                 Console.WriteLine("This exercise has today");
                 return;
@@ -73,6 +74,19 @@ namespace Workout
             
             _exercises[ind].SetSets(sets);
             _exercises[ind].SetReps(reps);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(Name);
+            foreach (var item in _exercises)
+            {
+                sb.AppendLine($"- {item}");
+            }
+
+            sb.AppendLine(new string('-', 20));
+            return sb.ToString();
         }
 
         private bool IsHas(string name)
