@@ -8,7 +8,7 @@ namespace Workout
         static void Main(string[] args)
         {
             WorkoutManager wm = new WorkoutManager();
-            Chest chest = new Chest(new List<Exercise>()
+           /* Chest chest = new Chest(new List<Exercise>()
             {
                 new DumbbellLayout(10,3),
                 new BenchPress(15,2)
@@ -28,7 +28,8 @@ namespace Workout
             wm.SaveToFile();
             //wm.UpdateDay(DateTime.Now);
             //wm.RemoveDay(DateTime.Now);
-            //wm.AddDayExercise(DateTime.Now);
+            //wm.AddDayExercise(DateTime.Now);*/
+            wm.LoadFromFile();
             Console.WriteLine(wm);
         }
     }

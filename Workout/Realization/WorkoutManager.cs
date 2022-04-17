@@ -8,11 +8,12 @@ namespace Workout
     public class WorkoutManager
     {
         private Dictionary<DateTime, List<Muscle>> _program;
-        private List<Func<int, int, Exercise>> _create;
+        private List<Func<int, int, Exercise>> _createExercise;
+        private List<Func<List<Exercise>,Muscle>> _createMuscle;
         public WorkoutManager()
         {
             _program = new Dictionary<DateTime, List<Muscle>>();
-            _create = new List<Func<int, int, Exercise>>()
+            _createExercise = new List<Func<int, int, Exercise>>()
             {
                 CreateArmyPress,
                 CreateBenchPress,
@@ -20,6 +21,14 @@ namespace Workout
                 CreateDumbbellPull,
                 CreateSquat,
                 CreateTiltPull
+            };
+            _createMuscle = new List<Func<List<Exercise>, Muscle>>()
+            {
+                CreateBack,
+                CreateBiceps,
+                CreateChest,
+                CreateLegs,
+                CreateShoulders
             };
         }
 
@@ -91,9 +100,9 @@ namespace Workout
                 return;
             }
 
-            for (int i = 0; i < _create.Count; i++)
+            for (int i = 0; i < _createExercise.Count; i++)
             {
-                Console.WriteLine($"{i+1} - {_create[i].Method.Name}");
+                Console.WriteLine($"{i+1} - {_createExercise[i].Method.Name}");
             }
             Console.WriteLine("Enter index exercise");
             int ind = EnterIndex();
@@ -101,7 +110,7 @@ namespace Workout
             int sets = EnterIndex();
             Console.WriteLine("Enter reps");
             int reps = EnterIndex();
-            mus[indMus-1].AddExercise(_create[ind-1]?.Invoke(reps,sets));
+            mus[indMus-1].AddExercise(_createExercise[ind-1]?.Invoke(reps,sets));
         }
 
         public void SaveToFile()
@@ -127,7 +136,52 @@ namespace Workout
 
         public void LoadFromFile()
         {
-            
+            if (File.Exists("dataBase.txt") == false)
+            {
+                Console.WriteLine("Cant find file");
+                return;
+            }
+
+            string allFile = File.ReadAllText("dataBase.txt");
+            List<string> days = new List<string>(allFile.Split(new string('-', 20)));
+            days.Remove("\r\n");
+            foreach (var t in days)
+            {
+                List<string> daysLine = new List<string>(t.Split('\n'));
+                if(daysLine.Count == 0)
+                    return;
+                for (int j = 0; j < daysLine.Count; j++)
+                {
+                    daysLine[j] = daysLine[j].Trim();
+                    daysLine[j] = daysLine[j].Replace("- ", "");
+                    daysLine[j] = daysLine[j].Replace("sets: ", "");
+                    daysLine[j] = daysLine[j].Replace("reps: ", "");
+                    if (daysLine.Remove(""))
+                        j--;
+                }
+
+                List<Exercise> exercises = new List<Exercise>();
+                foreach (var str in daysLine)
+                {
+                    str.Trim();
+                    int ind = GetIndexExercise(str);
+                    if (ind != -1)
+                    {
+                        int sets = int.Parse(daysLine[daysLine.IndexOf(str)+1]);
+                        int reps = int.Parse(daysLine[daysLine.IndexOf(str)+2]);
+                        exercises.Add(_createExercise[ind]?.Invoke(reps,sets));
+                    }
+                    
+                }
+                List<Muscle> muscles = new List<Muscle>();
+                foreach (var str in daysLine)
+                {
+                    int ind = GetIndexMuscle(str);
+                    if(ind != -1)
+                        muscles.Add(_createMuscle[ind]?.Invoke(exercises));
+                }
+                AddDay(DateTime.Parse(daysLine[0]), muscles);
+            }
         }
 
         public override string ToString()
@@ -135,6 +189,7 @@ namespace Workout
             StringBuilder sb = new StringBuilder();
             foreach (var item in _program.Keys)
             {
+                sb.AppendLine(item.ToShortDateString());
                 foreach (var it in _program[item])
                 {
                     sb.AppendLine(it.ToString());
@@ -154,11 +209,57 @@ namespace Workout
             return int.TryParse(str, out int ind) ? ind : 0;
         }
 
+        private int GetIndexMuscle(string name)
+        {
+            switch (name)
+            {
+                case "back":
+                    return 0;
+                case "biceps":
+                    return 1;
+                case  "chest":
+                    return 2;
+                case "legs":
+                    return 3;
+                case "shoulders":
+                    return 4;
+            }
+
+            return -1;
+        }
+
+        private int GetIndexExercise(string name)
+        {
+            switch (name)
+            {
+                case "army press":
+                    return 0;
+                case "bench press":
+                    return 1;
+                case  "dumbbell layout":
+                    return 2;
+                case "dumbbell pull":
+                    return 3;
+                case "squat":
+                    return 4;
+                case "tilt pull":
+                    return 5;
+            }
+
+            return -1;
+        }
+
         private Exercise CreateArmyPress(int reps, int sets) => new ArmyPress(reps, sets);
         private Exercise CreateBenchPress(int reps, int sets) => new BenchPress(reps, sets);
         private Exercise CreateDumbbellLayout(int reps, int sets) => new DumbbellLayout(reps, sets);
         private Exercise CreateDumbbellPull(int reps, int sets) => new DumbbellPull(reps, sets);
         private Exercise CreateSquat(int reps, int sets) => new Squat(reps, sets);
         private Exercise CreateTiltPull(int reps, int sets) => new TiltPull(reps, sets);
+
+        private Muscle CreateBack(List<Exercise> ex) => new Back(ex);
+        private Muscle CreateBiceps(List<Exercise> ex) => new Biceps(ex);
+        private Muscle CreateChest(List<Exercise> ex) => new Chest(ex);
+        private Muscle CreateLegs(List<Exercise> ex) => new Legs(ex);
+        private Muscle CreateShoulders(List<Exercise> ex) => new Shoulders(ex);
     }
 }
