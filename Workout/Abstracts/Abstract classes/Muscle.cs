@@ -9,10 +9,10 @@ namespace Workout
         public string Name { get; private set; }
         private List<Exercise> _exercises;
 
-        protected Muscle(string name)
+        protected Muscle(string name, List<Exercise> exercises)
         {
             Name = name.ToLower();
-            _exercises = new List<Exercise>();
+            _exercises = new List<Exercise>(exercises);
         }
 
         public void AddExercise(Exercise exercise)

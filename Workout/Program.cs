@@ -8,11 +8,15 @@ namespace Workout
         static void Main(string[] args)
         {
             WorkoutManager wm = new WorkoutManager();
-            Chest chest = new Chest();
-            Legs legs = new Legs();
-            legs.AddExercise(new Squat(10,2));
-            chest.AddExercise(new DumbbellLayout(10,3));
-            chest.AddExercise(new BenchPress(15,2));
+            Chest chest = new Chest(new List<Exercise>()
+            {
+                new DumbbellLayout(10,3),
+                new BenchPress(15,2)
+            }); 
+            Legs legs = new Legs(new List<Exercise>()
+            {
+                new Squat(10,2)
+            });
             wm.AddDay(new List<Muscle>()
             {
                 chest
@@ -21,8 +25,10 @@ namespace Workout
             {
                 legs
             });
+            wm.SaveToFile();
             //wm.UpdateDay(DateTime.Now);
-            wm.RemoveDay(DateTime.Now);
+            //wm.RemoveDay(DateTime.Now);
+            //wm.AddDayExercise(DateTime.Now);
             Console.WriteLine(wm);
         }
     }
