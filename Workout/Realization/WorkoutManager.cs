@@ -9,7 +9,8 @@ namespace Workout
     {
         private Dictionary<DateTime, List<Muscle>> _program;
         private List<Func<int, int, Exercise>> _createExercise;
-        private List<Func<List<Exercise>,Muscle>> _createMuscle;
+        private List<Func<List<Exercise>, Muscle>> _createMuscle;
+
         public WorkoutManager()
         {
             _program = new Dictionary<DateTime, List<Muscle>>();
@@ -30,11 +31,12 @@ namespace Workout
                 CreateLegs,
                 CreateShoulders
             };
+            LoadFromFile();
         }
 
         public void AddDay(DateTime date, List<Muscle> muscles)
         {
-            if(_program.TryAdd(CreateDate(date), new List<Muscle>(muscles)))
+            if (_program.TryAdd(CreateDate(date), new List<Muscle>(muscles)))
                 Console.WriteLine("Successful!");
             else
                 Console.WriteLine("Duplicates date or another error");
@@ -66,7 +68,7 @@ namespace Workout
             List<Muscle> mus = new List<Muscle>();
             _program.TryGetValue(day, out mus);
             mus.ForEach(Console.WriteLine);
-            
+
             Console.WriteLine("Enter index muscle");
             int indMus = EnterIndex();
             Console.WriteLine("Enter index exercise");
@@ -76,9 +78,11 @@ namespace Workout
                 Console.WriteLine("Incorrect index");
                 return;
             }
-            mus[indMus-1].UpdateExercise(mus[indMus-1].GetExercise(ind-1));
-            
+
+            mus[indMus - 1].UpdateExercise(mus[indMus - 1].GetExercise(ind - 1));
+
         }
+
         public void AddDayExercise(DateTime day)
         {
             day = CreateDate(day);
@@ -91,7 +95,7 @@ namespace Workout
             List<Muscle> mus = new List<Muscle>();
             _program.TryGetValue(day, out mus);
             mus.ForEach(Console.WriteLine);
-            
+
             Console.WriteLine("Enter index muscle");
             int indMus = EnterIndex();
             if (indMus < 0 || indMus > mus.Count)
@@ -102,15 +106,30 @@ namespace Workout
 
             for (int i = 0; i < _createExercise.Count; i++)
             {
-                Console.WriteLine($"{i+1} - {_createExercise[i].Method.Name}");
+                Console.WriteLine($"{i + 1} - {_createExercise[i].Method.Name}");
             }
+
             Console.WriteLine("Enter index exercise");
             int ind = EnterIndex();
             Console.WriteLine("Enter sets");
             int sets = EnterIndex();
             Console.WriteLine("Enter reps");
             int reps = EnterIndex();
-            mus[indMus-1].AddExercise(_createExercise[ind-1]?.Invoke(reps,sets));
+            mus[indMus - 1].AddExercise(_createExercise[ind - 1]?.Invoke(reps, sets));
+        }
+
+        public void GetTodayWorkout()
+        {
+            GetWorkout(DateTime.Now);
+        }
+        public void GetWorkout(DateTime date)
+        {
+            DateTime key = CreateDate(date);
+            if(_program.ContainsKey(key))
+                foreach (var item in _program[key])
+                {
+                    Console.WriteLine(item);
+                }
         }
 
         public void SaveToFile()
@@ -180,7 +199,8 @@ namespace Workout
                     if(ind != -1)
                         muscles.Add(_createMuscle[ind]?.Invoke(exercises));
                 }
-                AddDay(DateTime.Parse(daysLine[0]), muscles);
+                if(daysLine.Count != 0)
+                    AddDay(DateTime.Parse(daysLine[0]), muscles);
             }
         }
 
@@ -196,6 +216,11 @@ namespace Workout
                 }
             }
             return sb.ToString();
+        }
+
+        ~WorkoutManager()
+        {
+            SaveToFile();
         }
 
         private DateTime CreateDate(DateTime tmp)
